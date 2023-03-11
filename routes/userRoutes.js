@@ -6,33 +6,31 @@ const authRoutes = require("express").Router();
 authRoutes.post("/signup", async (req, res) => {
   try {
     const existingUser = await User.findOne({ email: req.body.email });
-
-    if (existingUser != null || !existingUser) {
+    if (existingUser === null || !existingUser) {
       const hashPass = await hashGenerate(req.body.password);
       const value = await User.find().sort({ _id: -1 }).limit(1);
-
-      let userid;
+      let userid = "06PPD";
       if (value.length != 0) {
-        userid = parseInt(value[0].split("D")[1]) + 1;
-        // console.log(userid);
+        userid = parseInt(value[0].userId.split("D")[1]) + 1;
+        console.log(userid);
       } else {
         userid = 1200;
-        // console.log(userid);
+        console.log(userid);
       }
       let str = req.body.email.split("@")[0];
-      var username = str.replace(/[^A-Z]+/gi, "");
-      console.log(str, username);
-      const user = await User.create({
+      var username = str.replace(/[^A-Z]+/gi, "") + userid;
+      console.log(req.body.email, hashPass, username, "06PPD" + userid);
+      const newUser = await User.create({
         email: req.body.email,
         password: hashPass,
+        name: username,
         userId: "06PPD" + userid,
-        name: username + userid,
       });
-
+      console.log(newUser);
       res.json({
         status: "success",
         message: "Registration succesful",
-        user,
+        newUser,
       });
     } else {
       res.status(400).json({
@@ -41,7 +39,8 @@ authRoutes.post("/signup", async (req, res) => {
       });
     }
   } catch (error) {
-    res.send("Unable to signup");
+    console.log(error);
+    res.send(error);
   }
 });
 authRoutes.post("/login", async (req, res) => {
