@@ -1,12 +1,12 @@
 const searchRoutes = require("express").Router();
 const Property = require("../models/propertySchema");
-searchRoutes.get("/:id", async (req, res) => {
+searchRoutes.get("/:id/:userid", async (req, res) => {
   try {
     console.log("Hi");
     const ppd_id = req.params.id.toUpperCase();
     const searchProperty = await Property.findOne({ ppdId: ppd_id });
     console.log(searchProperty);
-    if (searchProperty === null) {
+    if (searchProperty === null || searchProperty.userid != req.params.userid) {
       res.status(400).json({
         status: "Failed",
         message: "ID not found",
