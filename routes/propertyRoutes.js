@@ -1,23 +1,9 @@
 const propertyRoutes = require("express").Router();
 const cloudinary = require("../cloudinary/cloudinary");
 const Property = require("../models/propertySchema");
-// const multer = require("multer");
-// const multerStorage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "public");
-//   },
-//   filename: (req, file, cb) => {
-//     const ext = file.mimetype.split("/")[1];
-//     cb(null, `${file.fieldname}-${Date.now()}.${ext}`);
-//   },
-// });
 
-// const upload = multer({
-//   storage: multerStorage,
-// });
 propertyRoutes.post("/", async (req, res) => {
   try {
-    // console.log("Hello " + req.body.imageUrl);
     const uploadedResponse = await cloudinary.v2.uploader.upload(
       req.body.imageUrl,
       { upload_preset: "realEstate" },
@@ -116,6 +102,57 @@ propertyRoutes.get("/", async (req, res) => {
       status: "Failed",
       message: e.message,
     });
+  }
+});
+propertyRoutes.put("/update/:id", async (req, res) => {
+  try {
+    const updatedProperty = await Property.findByIdAndUpdate(
+      { _id: req.params.id },
+      {
+        property: req.body.property,
+        length: req.body.length,
+        breadth: req.body.breadth,
+        area: parseInt(req.body.length) * parseInt(req.body.breadth),
+        mobile: req.body.mobile,
+        negotiable: req.body.negotiable,
+        price: req.body.price,
+        ownership: req.body.ownership,
+        propertyAge: req.body.propertyAge,
+        propApproved: req.body.propApproved,
+        propDescription: req.body.propDescription,
+        bankLoan: req.body.bankLoan,
+        areaUnit: req.body.areaUnit,
+        bhk: req.body.bhk,
+        floorNum: req.body.floorNum,
+        attached: req.body.attached,
+        westToilet: req.body.westToilet,
+        furnished: req.body.furnished,
+        parking: req.body.parking,
+        lift: req.body.lift,
+        electricity: req.body.electricity,
+        facing: req.body.facing,
+        name: req.body.name,
+        postedBy: req.body.postedBy,
+        saleType: req.body.saleType,
+        package: req.body.package,
+        ppdPackage: req.body.ppdPackage,
+        email: req.body.email,
+        city: req.body.city,
+        addArea: req.body.addArea,
+        pincode: req.body.pincode,
+        address: req.body.address,
+        landmark: req.body.landmark,
+        latitude: req.body.latitude,
+        longitude: req.body.longitude,
+      },
+
+      {
+        new: true,
+      }
+    );
+    res.send(updatedProperty);
+  } catch (error) {
+    res.send(error);
   }
 });
 propertyRoutes.patch("/sold/:id", async (req, res) => {
